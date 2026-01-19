@@ -5,15 +5,14 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    // 開発用サーバー設定
     server: {
-      port: Number(process.env.PORT) || 8080,
+      port: 8080,
       host: '0.0.0.0',
     },
-    // 【重要】本番用(Cloud Run)サーバー設定
     preview: {
-      port: Number(process.env.PORT) || 8080,
+      port: 8080,
       host: '0.0.0.0',
+      allowedHosts: true
     },
     plugins: [react()],
     define: {
