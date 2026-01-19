@@ -3,34 +3,21 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
-  
-  // ▼▼▼ ここにあなたのAPIキーを貼り付けてください（ダブルクォーテーションは消さないで！） ▼▼▼
-  const MY_API_KEY = "zaSyDPJTrPXphjcFwupObNDR7rbvciBCVs0Zg";
-  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+  // ▼▼▼ あなたのAPIキー（AIza...）に書き換えてください ▼▼▼
+  const MY_API_KEY = "zaSyDPJTrPXphjcFwupObNDR7rbvciBCVs0Zg"; 
+  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
   return {
-    server: {
-      port: 8080,
-      host: '0.0.0.0',
-    },
-    preview: {
-      port: 8080,
-      host: '0.0.0.0',
-      allowedHosts: true
-    },
+    base: './', // パス設定を相対パスに
+    server: { port: 8080, host: '0.0.0.0' },
+    preview: { port: 8080, host: '0.0.0.0', allowedHosts: true },
     plugins: [react()],
     define: {
-      // これでアプリのどこからでもキーを呼び出せるようになります
-      'process.env': {}, // エラー回避のおまじない
+      'global': 'window',
+      'process.env': {},
       'process.env.API_KEY': JSON.stringify(MY_API_KEY),
       'process.env.GEMINI_API_KEY': JSON.stringify(MY_API_KEY),
-      'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(MY_API_KEY)
     },
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.')
-      }
-    }
+    resolve: { alias: { '@': path.resolve(__dirname, '.') } }
   };
 });
