@@ -1,12 +1,13 @@
 {
-  "name": "もやもや-→-プレゼン原稿メーカー",
+  "name": "moyamoya-presen-maker",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite preview --port $PORT --host"
   },
   "dependencies": {
     "react": "^19.2.3",
