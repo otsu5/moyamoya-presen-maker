@@ -1,13 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Vite標準の方法で環境変数を取得
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+// 環境変数からキーを取得（なければ空文字）
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(apiKey);
 
-// キーがない場合は空文字で初期化（エラーは実行時にキャッチ）
-const genAI = new GoogleGenerativeAI(apiKey || "");
-
-// ▼▼▼ ご指定の最新モデル（Gemini 2.0 Flash）を設定 ▼▼▼
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+// ▼ 無料枠で十分使える高速モデルを指定
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 export interface PresentationScript {
   slides: {
@@ -19,20 +17,19 @@ export interface PresentationScript {
 }
 
 export const generatePresentationScript = async (moyamoya: string): Promise<PresentationScript> => {
-  // 実行時にキーがない場合の明確なエラーハンドリング
+  // キー未設定時の安全策
   if (!apiKey) {
-    throw new Error("APIキーが設定されていません。環境変数 VITE_GEMINI_API_KEY を確認してください。");
+    throw new Error("APIキーが設定されていません。Cloud Runの変数設定を確認してください。");
   }
 
   try {
     const prompt = `
       あなたはプロのプレゼン構成作家です。
-      以下の「もやもやした悩み」を元に、心を動かすプレゼンテーションの構成案を作成してください。
-      出力は必ずJSON形式のみにしてください。
+      以下の「もやもやした悩み」を元に、構成案をJSON形式でのみ出力してください。
       
-      悩み内容: ${moyamoya}
+      悩み: ${moyamoya}
 
-      JSONフォーマット:
+      出力フォーマット:
       {
         "slides": [
           {
@@ -56,6 +53,6 @@ export const generatePresentationScript = async (moyamoya: string): Promise<Pres
 
   } catch (error) {
     console.error("生成エラー:", error);
-    throw error; // エラーをそのまま呼び出し元に伝え、画面に表示させる
+    throw error;
   }
 };
