@@ -1,8 +1,9 @@
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, '.', '');
   return {
     base: './',
     server: {
@@ -15,6 +16,12 @@ export default defineConfig(() => {
       allowedHosts: true
     },
     plugins: [react()],
+    // ▼▼▼ この部分がないとビルドで落ちます。復活させました。 ▼▼▼
+    define: {
+      'global': 'window',
+      'process.env': {},
+    },
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.')
