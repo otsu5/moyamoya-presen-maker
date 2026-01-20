@@ -1,0 +1,37 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--build-arg'
+      - 'VITE_GEMINI_API_KEY=${_VITE_GEMINI_API_KEY}'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:latest'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:$COMMIT_SHA']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:latest']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'moyamoya-presen-maker'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:$COMMIT_SHA'
+      - '--region'
+      - 'asia-northeast1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+
+images:
+  - 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/moyamoya-presen-maker:latest'
+
+substitutions:
+  _VITE_GEMINI_API_KEY: ''

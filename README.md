@@ -1,20 +1,39 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# もやもや→プレゼンメーカー
 
-# Run and deploy your AI Studio app
+あなたのもやもやした考えを、伝わるプレゼンテーションに変換するWebアプリケーションです。
 
-This contains everything you need to run your app locally.
+## 機能
 
-View your app in AI Studio: https://ai.studio/apps/drive/1TX4OG5Ng_giu2Swe-vpQviw5-s5xUIbH
+- もやもやした考えや悩みをテキストで入力
+- Gemini AIが自動的にプレゼンテーション構成を生成
+- スライド形式で結果を表示
 
-## Run Locally
+## ローカル開発
 
-**Prerequisites:**  Node.js
+### 前提条件
 
+- Node.js 18以上
+- Gemini API Key ([Google AI Studio](https://makersuite.google.com/app/apikey)で取得)
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### セットアップ
+
+```bash
+npm install
+cp .env.example .env.local
+# .env.local を編集して VITE_GEMINI_API_KEY を設定
+npm run dev
+```
+
+## Cloud Runへのデプロイ
+
+1. Cloud Run → 「サービスを作成」
+2. 「ソースリポジトリから継続的にデプロイ」を選択
+3. **ビルドタイプ: 「Dockerfile」を選択**
+4. 置換変数: `_VITE_GEMINI_API_KEY` を設定
+5. リージョン: asia-northeast1 (Tokyo)
+
+## 技術スタック
+
+- React 18 / TypeScript / Vite
+- Tailwind CSS (CDN)
+- Google Generative AI (@google/generative-ai)
