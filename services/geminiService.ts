@@ -1,11 +1,13 @@
-// ▼ Webブラウザで正しく動くSDKに変更
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// キーがあれば読み込むが、なくても強制しない
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+// Vite標準の方法で環境変数を取得
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-const genAI = new GoogleGenerativeAI(apiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+// キーがない場合は空文字で初期化（エラーは実行時にキャッチ）
+const genAI = new GoogleGenerativeAI(apiKey || "");
+
+// ▼▼▼ ご指定の最新モデル（Gemini 2.0 Flash）を設定 ▼▼▼
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export interface PresentationScript {
   slides: {
@@ -17,19 +19,9 @@ export interface PresentationScript {
 }
 
 export const generatePresentationScript = async (moyamoya: string): Promise<PresentationScript> => {
-  // APIキーがない場合の安全策（アプリを落とさない）
+  // 実行時にキーがない場合の明確なエラーハンドリング
   if (!apiKey) {
-    console.warn("APIキーが設定されていません。デモデータを返します。");
-    return {
-      slides: [
-        {
-          title: "APIキー未設定",
-          content: "APIキーが設定されていないため、デモを表示しています。",
-          visualImage: "設定アイコン",
-          script: "これはデモ用のプレビューです。AI生成を利用するには環境変数の設定が必要です。"
-        }
-      ]
-    };
+    throw new Error("APIキーが設定されていません。環境変数 VITE_GEMINI_API_KEY を確認してください。");
   }
 
   try {
@@ -64,15 +56,6 @@ export const generatePresentationScript = async (moyamoya: string): Promise<Pres
 
   } catch (error) {
     console.error("生成エラー:", error);
-    return {
-      slides: [
-        {
-          title: "エラーが発生しました",
-          content: "生成に失敗しました。",
-          visualImage: "エラー",
-          script: "システムエラーが発生しました。"
-        }
-      ]
-    };
+    throw error; // エラーをそのまま呼び出し元に伝え、画面に表示させる
   }
 };
