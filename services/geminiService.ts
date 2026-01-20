@@ -1,53 +1,51 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+// ★ 修正ポイント1: @google/genai → @google/generative-ai
+// ★ 修正ポイント2: GoogleGenAI → GoogleGenerativeAI
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// 環境変数からキーを取得（なければ空文字）
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-const genAI = new GoogleGenerativeAI(apiKey);
+// ★ 修正ポイント3: process.env → import.meta.env
+// ★ 修正ポイント4: GEMINI_API_KEY → VITE_GEMINI_API_KEY
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// ▼ 無料枠で十分使える高速モデルを指定
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+// ★ 修正ポイント5: インスタンス生成方法
+const genAI = new GoogleGenerativeAI(API_KEY);
 
-export interface PresentationScript {
-  slides: {
-    title: string;
-    content: string;
-    visualImage: string;
-    script: string;
-  }[];
+export async function generatePresentation(userInput: string) {
+  // ★ 修正ポイント6: モデル取得方法
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+  const prompt = `
+あなたはプレゼンテーション作成のプロです。
+以下のもやもやした考えを、明確で説得力のあるプレゼンテーションに変換してください。
+
+ユーザーの入力:
+${userInput}
+
+以下のJSON形式で出力してください:
+{
+  "title": "プレゼンテーションのタイトル",
+  "slides": [
+    {
+      "title": "スライドのタイトル",
+      "content": "スライドの内容（箇条書き可）"
+    }
+  ]
 }
+`;
 
-export const generatePresentationScript = async (moyamoya: string): Promise<PresentationScript> => {
   try {
-    const prompt = `
-      あなたはプロのプレゼン構成作家です。
-      以下の「もやもやした悩み」を元に、構成案をJSON形式でのみ出力してください。
-      
-      悩み: ${moyamoya}
-
-      出力フォーマット:
-      {
-        "slides": [
-          {
-            "title": "タイトル",
-            "content": "内容",
-            "visualImage": "画像イメージ",
-            "script": "セリフ"
-          }
-        ]
-      }
-    `;
-
+    // ★ 修正ポイント7: API呼び出し方法
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
-
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("JSONが見つかりませんでした");
     
-    return JSON.parse(jsonMatch[0]);
-
+    // JSONをパース
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
+    }
+    throw new Error('Failed to parse response');
   } catch (error) {
-    console.error("生成エラー:", error);
+    console.error('Gemini API error:', error);
     throw error;
   }
-};
+}
