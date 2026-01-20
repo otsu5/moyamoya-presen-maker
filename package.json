@@ -12,8 +12,8 @@
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@google/generative-ai": "^0.17.1",
-    "serve": "^14.2.3"
+    "@google/generative-ai": "^0.21.0",
+    "serve": "^14.2.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
