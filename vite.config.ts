@@ -1,11 +1,12 @@
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
+export default defineConfig(() => {
   return {
+    // 1. ルート直下のファイルを正しくビルドするためのベース設定
     base: './',
+    // 2. Cloud Runの要件（ポート8080）
     server: {
       port: 8080,
       host: '0.0.0.0',
@@ -16,13 +17,8 @@ export default defineConfig(({ mode }) => {
       allowedHosts: true
     },
     plugins: [react()],
-    // ▼▼▼ この部分がないとビルドで落ちます。復活させました。 ▼▼▼
-    define: {
-      'global': 'window',
-      'process.env': {},
-    },
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
     resolve: {
+      // 3. ルートディレクトリを @ として参照できるようにする
       alias: {
         '@': path.resolve(__dirname, '.')
       }
