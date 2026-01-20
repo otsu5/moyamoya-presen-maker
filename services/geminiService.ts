@@ -17,11 +17,6 @@ export interface PresentationScript {
 }
 
 export const generatePresentationScript = async (moyamoya: string): Promise<PresentationScript> => {
-  // キー未設定時の安全策
-  if (!apiKey) {
-    throw new Error("APIキーが設定されていません。Cloud Runの変数設定を確認してください。");
-  }
-
   try {
     const prompt = `
       あなたはプロのプレゼン構成作家です。
